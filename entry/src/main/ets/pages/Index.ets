@@ -10,7 +10,7 @@ struct Index {
           .fontSize(50)
           .fontWeight(FontWeight.Bold)
           .onClick(()=>{
-            console.log('111')
+            this.message = 'Hello ArkTS'
           })
         Image($r('app.media.icon'))
           .width(200)
