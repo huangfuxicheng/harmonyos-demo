@@ -22,20 +22,22 @@ class Task {
   .fontColor('#B1B2B1')
 }
 
+class StatInfo {
+  totalTask: number = 0
+  finishTask: number = 0
+}
 @Entry
 @Component
 struct PropPage {
   //总任务数量
-  @State totalTask: number = 0
-  //已完成任务数量
-  @State finishTask: number = 0
+  @State stat: StatInfo = new StatInfo()
 
   build() {
     Column({ space: 10 }) {
       //1.任务进度卡片
-      TaskStatistics({ totalTask: this.totalTask, finishTask: this.finishTask })
+      TaskStatistics({ totalTask: this.stat.totalTask, finishTask: this.stat.finishTask })
       //2.新增任务按钮
-      TaskList({ totalTask: $totalTask, finishTask: $finishTask })
+      TaskList({ stat: $stat })
     }
     .width('100%')
     .height('100%')
@@ -77,8 +79,7 @@ struct TaskStatistics {
 
 @Component
 struct TaskList {
-  @Link totalTask: number
-  @Link finishTask: number
+  @Link stat: StatInfo
   //任务数组
   @State tasks: Task[] = []
 
@@ -90,7 +91,7 @@ struct TaskList {
           //1.新增任务数量
           this.tasks.push(new Task())
           //2.更新任务总数量
-          this.totalTask = this.tasks.length
+          this.stat.totalTask = this.tasks.length
         })
       //3.任务列表
       List({ space: 10 }) {
@@ -105,7 +106,7 @@ struct TaskList {
                   //1.更新当前任务状态
                   item.finished = val
                   //2.更新已完成任务量
-                  this.finishTask = this.tasks.filter(item => item.finished).length
+                  this.stat.finishTask = this.tasks.filter(item => item.finished).length
                 })
             }
             .card()
@@ -134,7 +135,7 @@ struct TaskList {
     .margin({ left: 10 })
     .onClick(() => {
       this.tasks.splice(index, 1)
-      this.totalTask = this.tasks.length
+      this.stat.totalTask = this.tasks.length
     })
   }
 }
