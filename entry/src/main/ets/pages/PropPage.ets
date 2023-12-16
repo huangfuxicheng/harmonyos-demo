@@ -30,14 +30,14 @@ class StatInfo {
 @Component
 struct PropPage {
   //总任务数量
-  @State stat: StatInfo = new StatInfo()
+  @Provide stat: StatInfo = new StatInfo()
 
   build() {
     Column({ space: 10 }) {
       //1.任务进度卡片
-      TaskStatistics({ totalTask: this.stat.totalTask, finishTask: this.stat.finishTask })
+      TaskStatistics()
       //2.新增任务按钮
-      TaskList({ stat: $stat })
+      TaskList()
     }
     .width('100%')
     .height('100%')
@@ -47,8 +47,7 @@ struct PropPage {
 
 @Component
 struct TaskStatistics {
-  @Prop totalTask: number
-  @Prop finishTask: number
+  @Consume stat: StatInfo
 
   build() {
     Row() {
@@ -57,16 +56,16 @@ struct TaskStatistics {
         .fontWeight(FontWeight.Bold)
       Stack() {
         Progress({
-          value: this.finishTask,
-          total: this.totalTask,
+          value: this.stat.finishTask,
+          total: this.stat.totalTask,
           type: ProgressType.Ring
         })
           .width(100)
         Row() {
-          Text(this.finishTask.toString())
+          Text(this.stat.finishTask.toString())
             .fontSize(24)
             .fontColor('#36D')
-          Text('/' + this.totalTask.toString())
+          Text('/' + this.stat.totalTask.toString())
             .fontSize(24)
         }
       }
@@ -79,7 +78,7 @@ struct TaskStatistics {
 
 @Component
 struct TaskList {
-  @Link stat: StatInfo
+  @Consume stat: StatInfo
   //任务数组
   @State tasks: Task[] = []
 
