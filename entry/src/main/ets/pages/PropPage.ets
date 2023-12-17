@@ -1,4 +1,5 @@
 //任务类
+@Observed
 class Task {
   static id: number = 1
   //任务名称
@@ -26,6 +27,7 @@ class StatInfo {
   totalTask: number = 0
   finishTask: number = 0
 }
+
 @Entry
 @Component
 struct PropPage {
@@ -38,6 +40,7 @@ struct PropPage {
       TaskStatistics()
       //2.新增任务按钮
       TaskList()
+        .layoutWeight(1)
     }
     .width('100%')
     .height('100%')
@@ -92,31 +95,22 @@ struct TaskList {
           //2.更新任务总数量
           this.stat.totalTask = this.tasks.length
         })
+        .margin({ bottom: 20 })
       //3.任务列表
       List({ space: 10 }) {
         ForEach(this.tasks, (item: Task, index: number) => {
           ListItem() {
-            Row({ space: 10 }) {
-              Text(item.name)
-                .fontSize(20)
-              Checkbox()
-                .select(item.finished)
-                .onChange(val => {
-                  //1.更新当前任务状态
-                  item.finished = val
-                  //2.更新已完成任务量
-                  this.stat.finishTask = this.tasks.filter(item => item.finished).length
-                })
-            }
-            .card()
-            .justifyContent(FlexAlign.SpaceBetween)
-            .margin({ bottom: 20 })
+            TaskItem({
+              item: item,
+              onTaskChange: () => this.stat.finishTask = this.tasks.filter(item => item.finished).length
+            })
           }
           .swipeAction({ end: this.DeleteButton(index) })
         })
       }
+      .margin({bottom: 10})
       .width('100%')
-      .layoutWeight(1)
+      .height('100%')
       .alignListItem(ListItemAlign.Center)
     }
   }
@@ -136,5 +130,32 @@ struct TaskList {
       this.tasks.splice(index, 1)
       this.stat.totalTask = this.tasks.length
     })
+  }
+}
+
+@Component
+struct TaskItem {
+  @ObjectLink item: Task
+  onTaskChange: () => void
+
+  build() {
+    Row({ space: 10 }) {
+      if (this.item.finished) {
+        Text(this.item.name)
+          .finishedTask()
+      } else {
+        Text(this.item.name)
+      }
+      Checkbox()
+        .select(this.item.finished)
+        .onChange(val => {
+          //1.更新当前任务状态
+          this.item.finished = val
+          //2.更新已完成任务量
+          this.onTaskChange()
+        })
+    }
+    .card()
+    .justifyContent(FlexAlign.SpaceBetween)
   }
 }
