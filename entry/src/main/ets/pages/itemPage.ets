@@ -106,6 +106,7 @@ struct ItemPage {
     }
     .width('100%')
     .layoutWeight(1)
+    .fillScreen()
   }
 
   @Builder ItemCard(item: Item) {
